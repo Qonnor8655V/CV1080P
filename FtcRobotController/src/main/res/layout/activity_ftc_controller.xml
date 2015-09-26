@@ -13,6 +13,17 @@
   <include layout="@layout/header"
            android:id="@+id/included_header"/>
 
+  <!--Added by Tom Clark -->
+  <FrameLayout
+      android:layout_width="100dp"
+      android:layout_height="100dp"
+      android:layout_below="@+id/textErrorMessage"
+      android:layout_centerHorizontal="true"
+      android:id="@+id/previewLayout">
+  </FrameLayout>
+  <!--End code-->
+
+
   <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"

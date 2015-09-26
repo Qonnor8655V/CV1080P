@@ -39,6 +39,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.hardware.Camera;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -48,6 +49,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +60,7 @@ import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.ftccommon.FtcRobotControllerService.FtcRobotControllerBinder;
 import com.qualcomm.ftccommon.Restarter;
 import com.qualcomm.ftccommon.UpdateUI;
+import com.qualcomm.ftcrobotcontroller.opmodes.TestCamera;
 import com.qualcomm.modernrobotics.ModernRoboticsHardwareFactory;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -120,6 +123,41 @@ public class FtcRobotControllerActivity extends Activity {
 
   }
 
+  //Tom Clark @ 9/25/2015
+  public Camera camera;
+  private Camera openFrontFacingCamera() {
+    int cameraId = -1;
+    Camera cam = null;
+    int numberOfCameras = Camera.getNumberOfCameras();
+    for (int i = 0; i < numberOfCameras; i++) {
+      Camera.CameraInfo info = new Camera.CameraInfo();
+      Camera.getCameraInfo(i, info);
+      if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+        cameraId = i;
+        break;
+      }
+    }
+    try {
+      cam = Camera.open(cameraId);
+    } catch (Exception e) {
+
+    }
+    return cam;
+  }
+
+  public void initPreview(final Camera camera, final TestCamera context, final Camera.PreviewCallback previewCallback) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        context.preview = new CameraPreview(FtcRobotControllerActivity.this, camera, previewCallback);
+        FrameLayout previewLayout = (FrameLayout) findViewById(R.id.previewLayout);
+        previewLayout.addView(context.preview);
+      }
+    });
+  }
+
+  //----------END ADDED CODE
+
   protected ServiceConnection connection = new ServiceConnection() {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
@@ -164,6 +202,10 @@ public class FtcRobotControllerActivity extends Activity {
     dimmer.longBright();
     Restarter restarter = new RobotRestarter();
     Analytics analytics = new Analytics(this);
+
+    //Tom Clark @ 9/26/15
+    camera=openFrontFacingCamera();
+    //END
 
     updateUI = new UpdateUI(this, dimmer);
     updateUI.setRestarter(restarter);
