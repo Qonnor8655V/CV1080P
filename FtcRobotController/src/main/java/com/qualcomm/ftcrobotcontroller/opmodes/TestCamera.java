@@ -87,8 +87,15 @@ public class TestCamera extends OpMode {
         return value;
     }
 
+
+    @Override
+    public void start(){
+        init();
+    }
+
     @Override
     public void loop() {
+        telemetry.addData("Color:", "Started");
         if (yuvImage != null) {
             int redValue = 0;
             int blueValue = 0;
@@ -96,7 +103,7 @@ public class TestCamera extends OpMode {
             convertImage();
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < height; y++) {
-                    int pixel = image.getPixel(x, y); //Useful Connor? Gets the colors of the pixels.
+                    int pixel = image.getPixel(x, y); //Useful Connor? Yes Tom it is useful Gets the colors of the pixels.
                     redValue += red(pixel);
                     blueValue += blue(pixel);
                     greenValue += green(pixel);
@@ -116,13 +123,64 @@ public class TestCamera extends OpMode {
             }
             telemetry.addData("Color:", "Color detected is: " + colorString);
         }
-        telemetry.addData("Looped","Looped " + Integer.toString(looped) + " times");
-        Log.d("DEBUG:",data);
+        telemetry.addData("Looped", "Looped " + Integer.toString(looped) + " times");
+        //Log.d("DEBUG:",data);
     }
 
-    @Override
-    public void start(){
+    private int[] whereIsHighestColorCordinates(int squaresize, String color)
+    {
+        int[] coordarray = new int[2];
+        int toX = (width / squaresize);
+        int toY = (height / squaresize);
+        int highestcolorvalue = -2;
+        int currentcolorvalue = 0;
+        int totalcolors = 0;
+        int highestX = 0;
+        int highestY = 0;
+        for(int x = 1; x <= toX; x = x + squaresize)
+        {
+            for(int y = 1; y <= toY; y = y + squaresize)
+            {
+                totalcolors = 0;
+                for(int m = 1; m <= squaresize; m++)
+                {
+                    for(int n = 1; n <= squaresize; n++)
+                    {
+                        if(color.equals("Red") || color.equals("red"))
+                        {
+                            totalcolors += red(image.getPixel(x, y));
+                        }
+                        else if(color.equals("Green") || color.equals("green"))
+                        {
+                            totalcolors += red(image.getPixel(x, y));
+                        }
+                        else
+                        {
+                            totalcolors += red(image.getPixel(x, y));
+                        }
+                    }
+                }
+                if(totalcolors > highestcolorvalue)
+                {
+                    highestcolorvalue = totalcolors;
+                    highestX = x;
+                    highestY = y;
+                }
+            }
+        }
+        coordarray[0] = highestX;
+        coordarray[1] = highestY;
+        return coordarray;
+    }
 
+    private String findPositionOfDaColorOfDaResQBeaconToGetDaPointsOfDaAutonomous(int squaresize, String color)
+    {
+        String daposition = "";
+        int[] positionofred = new int[2];
+        int[] positionofblue = new int[2];
+        positionofred = whereIsHighestColorCordinates(20,"Red");
+        positionofblue = whereIsHighestColorCordinates(20,"Red");
+        return daposition;
     }
 
     @Override
